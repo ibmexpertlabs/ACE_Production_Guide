@@ -5,7 +5,7 @@
 **IBM Platform Engineer** - IBM Client Engineering
 
 - **LinkedIn**: [Alejandro Palumbo](https://www.linkedin.com/in/alejandro-palumbo/)
-- **GitHub**: [@apalumbo-ibm](https://github.com/apalumbo-ibm)
+- **GitHub**: [@apalumbo-ibm](https://github.com/asapalejandro
 
 ---
 

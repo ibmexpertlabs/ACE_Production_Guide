@@ -78,12 +78,13 @@ Before you begin, ensure you have:
 
 ## 🚦 Getting Started
 
-1. **Review the [Overview](intro/overview.md)** - Understand the deployment process
-2. **Follow the [Cluster Setup](cluster/create-cluster.md)** - Create and configure your OpenShift cluster
-3. **Configure [GitOps](cluster/configure-gitops.md)** - Set up ArgoCD and repository structure
-4. **Deploy [Infrastructure](infrastructure/namespaces.md)** - Set up namespaces and resources
-5. **Install [Services](services/ace-operator.md)** - Deploy ACE operator and supporting services
-6. **Build [Applications](applications/build-config.md)** - Create and deploy your ACE applications
+This guide follows a structured approach to deploying ACE in production:
+
+1. **Cluster Setup** - Create and configure your OpenShift cluster
+2. **GitOps Configuration** - Set up ArgoCD and repository structure  
+3. **Infrastructure Deployment** - Set up namespaces and resources
+4. **Service Installation** - Deploy ACE operator and supporting services
+5. **Application Building** - Create and deploy your ACE applications
 
 ## 📚 Repository Structure
 
@@ -108,4 +109,4 @@ This project is licensed under the IBM License Agreement.
 
 ---
 
-**Ready to get started?** Begin with the [Overview](intro/overview.md) to understand the complete deployment process, or jump directly to [Prerequisites](intro/prerequisites.md) to prepare your environment. 
+**Ready to get started?** Follow the structured approach above to deploy ACE in your production environment. 
