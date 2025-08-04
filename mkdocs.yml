@@ -94,34 +94,4 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Meet the Authors: authors.md
-  - Introduction:
-    - Overview: intro/overview.md
-    - Prerequisites: intro/prerequisites.md
-    - Architecture: intro/architecture.md
-  - Cluster Setup:
-    - Create Cluster: cluster/create-cluster.md
-    - Configure GitOps: cluster/configure-gitops.md
-    - Bootstrap Cluster: cluster/bootstrap.md
-  - Infrastructure:
-    - Namespaces: infrastructure/namespaces.md
-    - Storage: infrastructure/storage.md
-    - Security: infrastructure/security.md
-  - Services:
-    - ACE Operator: services/ace-operator.md
-    - Tekton Pipelines: services/tekton.md
-    - ArgoCD: services/argocd.md
-  - Applications:
-    - Build Configuration: applications/build-config.md
-    - Integration Server: applications/integration-server.md
-    - Deployment: applications/deployment.md
-  - Examples:
-    - Cloud Native Example: examples/cloud-native.md
-    - Sample Application: examples/sample-app.md
-  - Troubleshooting:
-    - Common Issues: troubleshooting/common-issues.md
-    - Debugging: troubleshooting/debugging.md
-  - Reference:
-    - Repository Structure: reference/repo-structure.md
-    - Configuration Files: reference/config-files.md
-    - Commands: reference/commands.md 
+  - Meet the Authors: authors.md 
