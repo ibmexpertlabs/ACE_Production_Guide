@@ -1,0 +1,127 @@
+site_name: ACE Production Guide
+site_description: App Connect Enterprise Production Deployment Guide for OpenShift
+site_author: IBM Expert Labs
+site_url: https://ibmexpertlabs.github.io/ACE_Production_Guide/
+
+repo_name: ibmexpertlabs/ACE_Production_Guide
+repo_url: https://github.com/ibmexpertlabs/ACE_Production_Guide
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ibmexpertlabs
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/ibm/
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+nav:
+  - Home: index.md
+  - Meet the Authors: authors.md
+  - Introduction:
+    - Overview: intro/overview.md
+    - Prerequisites: intro/prerequisites.md
+    - Architecture: intro/architecture.md
+  - Cluster Setup:
+    - Create Cluster: cluster/create-cluster.md
+    - Configure GitOps: cluster/configure-gitops.md
+    - Bootstrap Cluster: cluster/bootstrap.md
+  - Infrastructure:
+    - Namespaces: infrastructure/namespaces.md
+    - Storage: infrastructure/storage.md
+    - Security: infrastructure/security.md
+  - Services:
+    - ACE Operator: services/ace-operator.md
+    - Tekton Pipelines: services/tekton.md
+    - ArgoCD: services/argocd.md
+  - Applications:
+    - Build Configuration: applications/build-config.md
+    - Integration Server: applications/integration-server.md
+    - Deployment: applications/deployment.md
+  - Examples:
+    - Cloud Native Example: examples/cloud-native.md
+    - Sample Application: examples/sample-app.md
+  - Troubleshooting:
+    - Common Issues: troubleshooting/common-issues.md
+    - Debugging: troubleshooting/debugging.md
+  - Reference:
+    - Repository Structure: reference/repo-structure.md
+    - Configuration Files: reference/config-files.md
+    - Commands: reference/commands.md 
