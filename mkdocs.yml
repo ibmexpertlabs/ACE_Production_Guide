@@ -1,6 +1,6 @@
 site_name: ACE Production Guide
 site_description: App Connect Enterprise Production Deployment Guide for OpenShift
-site_author: IBM Expert Labs
+site_author: IBM Client Engineering
 site_url: https://ibmexpertlabs.github.io/ACE_Production_Guide/
 
 repo_name: ibmexpertlabs/ACE_Production_Guide
