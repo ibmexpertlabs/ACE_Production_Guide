@@ -94,4 +94,6 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Meet the Authors: authors.md 
+  - Meet the Authors: authors.md
+  - The ACE Tutorial: ace-tutorial.md
+  - Target Architecture: target-architecture.md 
