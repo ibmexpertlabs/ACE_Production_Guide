@@ -212,6 +212,15 @@ mq.ibm.com/QueueManager:
 
 This logic is used by ArgoCD to determine when a queue manager is healthy.
 
+!!! tip "Custom Health Checks"
+    The custom ArgoCD instance includes IBM Cloud Pak-specific health checks for:
+    - **Queue Managers** (`mq.ibm.com/QueueManager`)
+    - **Integration Servers** (`appconnect.ibm.com/IntegrationServer`)
+    - **ACE Applications** (`appconnect.ibm.com/Application`)
+    - **Other Cloud Pak resources**
+
+    These health checks ensure ArgoCD can properly monitor the status of IBM Cloud Pak resources and provide accurate health assessments in the ArgoCD dashboard.
+
 ### 2. Create Custom ArgoCD Instance
 
 ```bash
@@ -233,6 +242,9 @@ while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kuberne
     sleep 30
 done
 ```
+
+!!! note "Installation Timing"
+    The custom ArgoCD instance installation is an asynchronous process. The operator installation takes time, and once the operator is installed, the custom ArgoCD instance also takes time to create. The wait commands ensure all components are fully ready before proceeding.
 
 ### 4. Configure SSL Certificate (Optional)
 
@@ -330,6 +342,11 @@ With ArgoCD installed and configured, you're ready to:
 3. **Deploy Infrastructure** - Set up namespaces, RBAC, and foundational resources
 4. **Install Cloud Pak for Integration** - Deploy CP4I with GitOps automation
 
+!!! success "Congratulations!"
+    You have successfully created the GitOps repository for your cluster and examined its high-level structure. You also installed ArgoCD with a custom instance that includes IBM Cloud Pak-specific health checks. You created specific **clusterrole** and **clusterrolebinding** for the ArgoCD service account to ensure that it manages the cluster in a well-governed manner. Finally, you launched the UI for ArgoCD; you will make extensive use of it during this tutorial.
+
+    In the next topic of this chapter, we are going to customize the GitOps repository for your cluster and use Tekton and ArgoCD to create and manage the Kubernetes resources for our ACE applications.
+
 ## Troubleshooting
 
 ### Common Issues
@@ -354,6 +371,9 @@ With ArgoCD installed and configured, you're ready to:
 - [ArgoCD Documentation](https://argoproj.github.io/argo-cd/)
 - [OpenShift GitOps Documentation](https://docs.openshift.com/container-platform/4.16/cicd/gitops/understanding-openshift-gitops.html)
 - [IBM Cloud Pak for Integration Documentation](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2)
+- [Production GitOps Guide](https://production-gitops.dev/guides/cp4i/ace/cluster-config/gitops-tekton-argocd/) - Comprehensive GitOps setup guide
+- [ArgoCD Resource Health](https://argoproj.github.io/argo-cd/operator-manual/health/) - Custom health check documentation
+- [Lua Programming Language](https://www.lua.org/) - For custom health check development
 
 ---
 
