@@ -92,34 +92,61 @@ Once ready, click the **Cluster URL** to open the OpenShift Console and begin na
 
 ## Cluster Specifications
 
-### Recommended Configuration
+### Minimum System Requirements
 
-For production ACE workloads, we recommend:
+For Cloud Pak for Integration 16.1.2, ensure your cluster meets these minimum requirements:
 
-| Component | Specification | Rationale |
-|-----------|---------------|-----------|
-| **OpenShift Version** | 4.16+ | Latest stable release with full ACE support |
-| **Worker Nodes** | 3 | High availability and redundancy |
-| **Node Flavor** | 4 vCPU x 16GB | Sufficient resources for ACE workloads |
-| **Storage** | 100GB | Adequate space for applications and logs |
+| Component | Minimum Specification | Notes |
+|-----------|----------------------|-------|
+| **OpenShift Version** | 4.16+ | Latest stable release with full CP4I support |
+| **Worker Nodes** | 3 | Required for high availability deployment |
+| **Node Flavor** | 4 vCPU x 16GB | Minimum for CP4I foundational services |
+| **Storage** | Block RWO storage class | Required for Cloud Pak foundational services |
 
-### Resource Requirements
+### Storage Requirements for High Availability
 
-ACE applications typically require:
+Cloud Pak for Integration requires specific storage configurations for high availability deployments:
 
-- **CPU:** 0.5-2 cores per integration runtime
+#### Cloud Pak Foundational Services
+- **Storage Type:** Block RWO
+- **Volumes Required:** 2 volumes (HA configuration)
+- **Purpose:** Cloud Native PostgreSQL replicas for Keycloak
+
+#### App Connect Enterprise Components
+- **Integration Runtime:** No persistent storage required
+- **Integration Dashboard:** File RWX or S3 object storage (minimum 1 IOPS/GB)
+- **Integration Design:** Block RWO, RWX, or S3 storage
+  - **Non-HA:** 1 volume
+  - **HA:** 3 volumes (one per CouchDB replica)
+
+#### Additional CP4I Services (if deployed)
+- **API Connect:** 40 volumes (HA configuration)
+- **Event Manager:** Block RWO storage
+- **Kafka Cluster:** 6 volumes (HA: 3 broker + 3 ZooKeeper)
+- **Messaging Server:** 3 volumes (HA configuration)
+
+!!! important "Storage Class Configuration"
+    The installation process automatically selects the default storage class for your cluster. 
+    Ensure your OpenShift administrator has configured a default storage class that meets 
+    the Block RWO requirements for Cloud Pak foundational services.
+
+### Resource Allocation Guidelines
+
+For production environments, consider these resource allocations:
+
+- **CPU:** Allocate based on expected workload (typically 0.5-2 cores per integration runtime)
 - **Memory:** 512MB-2GB per integration runtime
-- **Storage:** 10-50GB for application data and logs
-- **Network:** Standard cluster networking
+- **Network:** Standard cluster networking with proper ingress/egress configuration
 
 ## Post-Provisioning Steps
 
 Once your cluster is ready, you'll need to:
 
-1. **Configure GitOps** - Set up ArgoCD for continuous deployment
-2. **Install ACE Operator** - Deploy the App Connect Enterprise operator
-3. **Configure Storage** - Set up persistent volumes for ACE applications
-4. **Set up Monitoring** - Configure logging and metrics collection
+1. **Verify Storage Configuration** - Ensure Block RWO storage class is properly configured
+2. **Configure GitOps** - Set up ArgoCD for continuous deployment and high availability
+3. **Install Cloud Pak for Integration** - Deploy CP4I with high availability configuration
+4. **Configure ACE Services** - Set up App Connect Enterprise with HA deployment
+5. **Set up Monitoring** - Configure logging and metrics collection for production monitoring
 
 ## Troubleshooting
 
@@ -144,6 +171,8 @@ Once your cluster is ready, you'll need to:
 
 - [IBM Technology Zone Documentation](https://techzone.ibm.com/docs)
 - [OpenShift Documentation](https://docs.openshift.com/)
+- [Cloud Pak for Integration 16.1.2 Documentation](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2)
+- [System Requirements for CP4I](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=planning-system-requirements)
 - [ACE Operator Documentation](https://www.ibm.com/docs/en/app-connect/12.0.x)
 
 ---
