@@ -64,7 +64,9 @@ We're going to create a dedicated GitHub organization for the repositories used 
 
 3. Choose a descriptive name for your organization (e.g., `ace-production-gitops`)
 
-4. Select the **Free** plan (sufficient for this tutorial)
+4. Select the **Free** plan (sufficient for this tutorial):
+
+![Select Free Plan](images/pick-plan.png)
 
 5. Complete the organization setup
 
@@ -79,6 +81,21 @@ Once your organization is created, you'll need to set up proper access for ArgoC
    - `read:org` (Read organization data)
 
 4. Save the token securely - you'll need it for ArgoCD configuration
+
+### 3. GitHub Authentication Setup
+
+To validate your GitHub authentication, you'll need to complete the GitHub CLI authorization process:
+
+1. **GitHub Authorization Request** - You'll see an authorization page:
+
+![GitHub Authorization](images/git-auth.png)
+
+2. **Authorization Confirmation** - After successful authorization:
+
+![GitHub Authorization Complete](images/git-auth-done.png)
+
+!!! tip "GitHub CLI Authentication"
+    This authentication process ensures that your local environment can interact with GitHub repositories securely. The authorization tokens are used by ArgoCD and other tools to access your GitOps repositories.
 
 ## Clone Sample GitOps Repositories
 
@@ -371,9 +388,10 @@ With ArgoCD installed and configured, you're ready to:
 - [ArgoCD Documentation](https://argoproj.github.io/argo-cd/)
 - [OpenShift GitOps Documentation](https://docs.openshift.com/container-platform/4.16/cicd/gitops/understanding-openshift-gitops.html)
 - [IBM Cloud Pak for Integration Documentation](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2)
-- [Production GitOps Guide](https://production-gitops.dev/guides/cp4i/ace/cluster-config/gitops-tekton-argocd/) - Comprehensive GitOps setup guide
 - [ArgoCD Resource Health](https://argoproj.github.io/argo-cd/operator-manual/health/) - Custom health check documentation
-- [Lua Programming Language](https://www.lua.org/) - For custom health check development
+
+!!! note "Monitoring Solutions"
+    For production environments, consider implementing a comprehensive monitoring solution such as IBM Instana or similar enterprise monitoring platforms. These solutions provide advanced observability, performance monitoring, and alerting capabilities for ACE applications and the underlying infrastructure.
 
 ---
 
