@@ -97,4 +97,6 @@ nav:
   - Meet the Authors: authors.md
   - The ACE Tutorial: ace-tutorial.md
   - Target Architecture: target-architecture.md
-  - Create the Cluster: create-cluster.md 
+  - Create the Cluster: create-cluster.md
+  - Configure the Cluster:
+    - Set Up GitOps: configure-cluster-gitops.md 
