@@ -32,7 +32,7 @@ This approach creates a best-practice-based, production-ready deployment of an A
 
 ## Tutorial Structure
 
-This tutorial is divided into chapters that help you build, step-by-step, an ACE integration server based on a cloud-native approach. Each chapter comprises topics which you should complete in order to gain a full understanding.
+This tutorial is divided into chapters that help you build, step-by-step, an ACE integration runtime based on a cloud-native approach. Each chapter comprises topics which you should complete in order to gain a full understanding.
 
 ### Example Integration Flow
 

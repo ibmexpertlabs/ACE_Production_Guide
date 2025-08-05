@@ -2,10 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://ibmexpertlabs.github.io/ACE_Production_Guide/</loc>
-         <lastmod>2025-08-04</lastmod>
+         <lastmod>2025-08-05</lastmod>
+    </url>
+    <url>
+         <loc>https://ibmexpertlabs.github.io/ACE_Production_Guide/ace-tutorial/</loc>
+         <lastmod>2025-08-05</lastmod>
     </url>
     <url>
          <loc>https://ibmexpertlabs.github.io/ACE_Production_Guide/authors/</loc>
-         <lastmod>2025-08-04</lastmod>
+         <lastmod>2025-08-05</lastmod>
+    </url>
+    <url>
+         <loc>https://ibmexpertlabs.github.io/ACE_Production_Guide/target-architecture/</loc>
+         <lastmod>2025-08-05</lastmod>
     </url>
 </urlset>
