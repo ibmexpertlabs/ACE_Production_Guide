@@ -56,80 +56,36 @@ Before attempting this section, you must have completed the following tasks:
     - **Client Version:** 4.19 or higher
     - **Server Version:** 4.16 or higher
 
-## Setting up GitHub Organization
+## Fork and Clone GitOps Repositories
 
-In this section, we'll create the GitOps organization that contains the GitOps repositories used by ArgoCD to determine the state of our cluster. We'll copy a set of sample GitOps repositories as a starting point, make our own copy, and review its contents. Later in the tutorial, we'll customize it for our cluster.
+Since this guide is designed for community contribution, you should fork the GitOps repositories to your own GitHub account and then clone them to your local environment.
 
-### 1. Create a New GitHub Organization
+### 1. Fork the GitOps Repositories
 
-We're going to create a dedicated GitHub organization for the repositories used in this tutorial. This is good practice as it allows you to keep your production reference work separate from other git work, or try out multiple configurations using different organizations.
+1. Navigate to the [multi-tenancy-gitops repository](https://github.com/ibmclientengineering/multi-tenancy-gitops)
+2. Click the **"Fork"** button to create your own copy
+3. Repeat for the supporting repositories:
+   - [multi-tenancy-gitops-infra](https://github.com/ibmclientengineering/multi-tenancy-gitops-infra)
+   - [multi-tenancy-gitops-services](https://github.com/ibmclientengineering/multi-tenancy-gitops-services)
+   - [multi-tenancy-gitops-apps](https://github.com/ibmclientengineering/multi-tenancy-gitops-apps)
 
-1. In your browser, navigate to [GitHub Organizations](https://github.com/settings/organizations) to create a new GitHub organization.
-
-2. Click **"New organization"** and follow the setup process:
-
-![Create GitHub Organization](images/create_organzation.png)
-
-3. Choose a descriptive name for your organization (e.g., `ace-production-gitops`)
-
-4. Select the **Free** plan (sufficient for this tutorial):
-
-![Select Free Plan](images/pick-plan.png)
-
-5. Complete the organization setup
-
-### 2. Set Up Repository Access
-
-Once your organization is created, you'll need to set up proper access for ArgoCD to read your repositories:
-
-1. Navigate to your organization settings
-2. Go to **Developer settings** → **Personal access tokens** → **Tokens (classic)**
-3. Generate a new token with the following permissions:
-   - `repo` (Full control of private repositories)
-   - `read:org` (Read organization data)
-
-4. Save the token securely - you'll need it for ArgoCD configuration
-
-### 3. GitHub Authentication Setup
-
-To validate your GitHub authentication, you'll need to complete the GitHub CLI authorization process:
-
-1. **GitHub Authorization Request** - You'll see an authorization page:
-
-![GitHub Authorization](images/git-auth.png)
-
-2. **Authorization Confirmation** - After successful authorization:
-
-![GitHub Authorization Complete](images/git-auth-done.png)
-
-!!! tip "GitHub CLI Authentication"
-    This authentication process ensures that your local environment can interact with GitHub repositories securely. The authorization tokens are used by ArgoCD and other tools to access your GitOps repositories.
-
-## Clone Sample GitOps Repositories
-
-The GitOps approach uses multiple repositories to manage different aspects of the deployment:
-
-### Repository Structure
-
-- **multi-tenancy-gitops** - Main GitOps orchestration repository
-- **multi-tenancy-gitops-infra** - Infrastructure resources (namespaces, RBAC, etc.)
-- **multi-tenancy-gitops-services** - Service operators and instances
-- **multi-tenancy-gitops-apps** - ACE applications and configurations
-
-### Clone the Repositories
+### 2. Clone Your Forked Repositories
 
 ```bash
-# Clone the main GitOps repository
-git clone https://github.com/ibmexpertlabs/multi-tenancy-gitops.git
+# Clone your forked main GitOps repository
+git clone https://github.com/YOUR-USERNAME/multi-tenancy-gitops.git
 cd multi-tenancy-gitops
 
 # Clone the supporting repositories
-git clone https://github.com/ibmexpertlabs/multi-tenancy-gitops-infra.git
-git clone https://github.com/ibmexpertlabs/multi-tenancy-gitops-services.git
-git clone https://github.com/ibmexpertlabs/multi-tenancy-gitops-apps.git
+git clone https://github.com/YOUR-USERNAME/multi-tenancy-gitops-infra.git
+git clone https://github.com/YOUR-USERNAME/multi-tenancy-gitops-services.git
+git clone https://github.com/YOUR-USERNAME/multi-tenancy-gitops-apps.git
 ```
 
-### Review Repository Structure
+!!! important "Repository Customization"
+    Replace `YOUR-USERNAME` with your actual GitHub username. You'll need to update the `repoURL` in the bootstrap.yaml file to point to your forked repository.
+
+### 3. Review Repository Structure
 
 Take a moment to explore the repository structure:
 
@@ -155,7 +111,17 @@ ArgoCD is installed via the OpenShift GitOps operator. The installation process 
 
 ```bash
 # Apply the ArgoCD installation manifests
-oc apply -f setup/ocp4x/argocd-operator/ -n openshift-operators
+oc apply -f setup/ocp4x/ -n openshift-operators
+```
+
+You should see output similar to:
+```
+Warning: resource clusterroles/custom-argocd-cluster-argocd-application-controller is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by oc apply. oc apply should only be used on resources created declaratively by either oc create --save-config or oc apply. The missing annotation will be patched automatically.
+clusterrole.rbac.authorization.k8s.io/custom-argocd-cluster-argocd-application-controller configured
+Warning: resource clusterrolebindings/openshift-gitops-argocd-application-controller is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by oc apply. oc apply should only be used on resources created declaratively by either oc create --save-config or oc apply. The missing annotation will be patched automatically.
+clusterrolebinding.rbac.authorization.k8s.io/openshift-gitops-argocd-application-controller configured
+clusterrolebinding.rbac.authorization.k8s.io/openshift-gitops-cntk-argocd-application-controller created
+subscription.operators.coreos.com/openshift-gitops-operator created
 ```
 
 !!! note "Open Source Community Approach"
@@ -163,7 +129,7 @@ oc apply -f setup/ocp4x/argocd-operator/ -n openshift-operators
 
 ### 2. Verify Installation
 
-Monitor the installation progress:
+The ArgoCD operator installation takes some time, and once the operator has been installed, the default instance of ArgoCD also takes a little time to create. We can now issue two commands which, in turn, will wait for the ArgoCD operator to be installed and for the default instance of ArgoCD to be started.
 
 ```bash
 # Wait for the ArgoCD operator to be installed
@@ -179,14 +145,16 @@ while ! oc wait pod --timeout=-1s --for=condition=Ready --all -n openshift-gitop
 done
 ```
 
-You should see:
+After a while, you should see the following message informing us that operator installation is complete (it may take a few minutes):
 ```
 customresourcedefinition.apiextensions.k8s.io/applications.argoproj.io condition met
 ```
 
+The ArgoCD operator is now installed and the default instance has been successfully created.
+
 ### 3. Verify Cluster Roles
 
-ArgoCD runs under a dedicated service account with custom cluster roles for governance:
+ArgoCD runs under a dedicated service account. For good governance, we use a custom **clusterrole** and **clusterrolebinding** to control the specific operations this service account can perform on different resources in the cluster.
 
 ```bash
 # Verify cluster roles are created
@@ -195,14 +163,40 @@ oc get clusterrolebinding openshift-gitops-argocd-application-controller
 oc get clusterrolebinding openshift-gitops-cntk-argocd-application-controller
 ```
 
+You'll see the resources are created in the cluster:
+```
+$ oc get clusterrole custom-argocd-cluster-argocd-application-controller
+NAME                                                  CREATED AT
+custom-argocd-cluster-argocd-application-controller   2021-08-27T13:35:13Z
+$ oc get clusterrolebinding openshift-gitops-argocd-application-controller
+NAME                                             ROLE                                                              AGE
+openshift-gitops-argocd-application-controller   ClusterRole/custom-argocd-cluster-argocd-application-controller   8m43s
+$ oc get clusterrolebinding openshift-gitops-cntk-argocd-application-controller
+NAME                                                  ROLE                                                              AGE
+openshift-gitops-cntk-argocd-application-controller   ClusterRole/custom-argocd-cluster-argocd-application-controller   8m45s
+```
+
+The clusterrole `custom-argocd-cluster-argocd-application-controller` defines a specific set of resources that are required by the ArgoCD service account and access rights over them.
+
+The cluster role bindings `openshift-gitops-argocd-application-controller` and `openshift-gitops-cntk-argocd-application-controller` bind the ArgoCD service account to the cluster role above.
+
+In combination, these definitions limit ArgoCD to perform the minimum set of operations required to manage the cluster. This is important; it means that ArgoCD behaves as a well governed administrator of the cluster.
+
 ### 4. Remove Default Instance
 
-The default ArgoCD instance isn't sufficient for our tutorial. We need to create a custom one:
+As we'll see in a moment, the default instance of ArgoCD, created when we install the operator, isn't sufficient for our tutorial; we have to create a new one. But before we do this, we have to delete the default instance of ArgoCD.
 
 ```bash
 # Delete the default ArgoCD instance
 oc delete gitopsservice cluster || true
 ```
+
+You will see the resources being deleted as follows:
+```
+gitopsservice.pipelines.openshift.io "cluster" deleted
+```
+
+Now that we've deleted the default instance, we can create a customized ArgoCD instance with additional capabilities.
 
 ## Creating a Custom ArgoCD Instance
 
@@ -210,13 +204,15 @@ The default instance of ArgoCD provides built-in health checks for standard Kube
 
 ### 1. Review Custom Health Checks
 
-Explore the custom health checks in the ArgoCD YAML:
+The default instance of ArgoCD provides some built-in health checks for validating standard Kubernetes resources. However, these checks are not sufficient to check the health of the **custom resources** added by the IBM Cloud Paks; we need to create a custom instance of ArgoCD that implements some IBM Cloud Pak specific health checks.
+
+You can explore these custom health checks in the ArgoCD YAML that we'll use to create the new ArgoCD instance:
 
 ```bash
 cat setup/ocp4x/argocd-instance/argocd-instance.yaml
 ```
 
-Notice the custom health check for queue managers:
+Notice, for example, a custom health check for queue managers:
 
 ```yaml
 mq.ibm.com/QueueManager:
@@ -240,28 +236,25 @@ mq.ibm.com/QueueManager:
 
 This logic is used by ArgoCD to determine when a queue manager is healthy.
 
-!!! tip "Custom Health Checks"
-    The custom ArgoCD instance includes IBM Cloud Pak-specific health checks for:
-    - **Queue Managers** (`mq.ibm.com/QueueManager`)
-    - **Integration Servers** (`appconnect.ibm.com/IntegrationServer`)
-    - **ACE Applications** (`appconnect.ibm.com/Application`)
-    - **Other Cloud Pak resources**
-
-    These health checks ensure ArgoCD can properly monitor the status of IBM Cloud Pak resources and provide accurate health assessments in the ArgoCD dashboard.
+You can learn more about the ArgoCD Resource Health [here](https://argoproj.github.io/argo-cd/operator-manual/health/) and ArgoCD custom **Lua** health checks [here](https://www.lua.org/).
 
 ### 2. Create Custom ArgoCD Instance
+
+Now let's create the custom ArgoCD instance using this YAML.
+
+Issue the following command to create a custom ArgoCD instance:
 
 ```bash
 # Create the custom ArgoCD instance
 oc apply -f setup/ocp4x/argocd-instance/ -n openshift-gitops
 ```
 
-You should see:
+The response confirms that the below resources has been created:
 ```
 argocd.argoproj.io/openshift-gitops-cntk created
 ```
 
-### 3. Wait for Instance to be Ready
+Issue the below command; it will wait to complete until ArgoCD instance pod is up and running:
 
 ```bash
 # Wait for ArgoCD instance to be ready
@@ -271,13 +264,12 @@ while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kuberne
 done
 ```
 
-!!! note "Installation Timing"
-    The custom ArgoCD instance installation is an asynchronous process. The operator installation takes time, and once the operator is installed, the custom ArgoCD instance also takes time to create. The wait commands ensure all components are fully ready before proceeding.
-
-### 4. Configure SSL Certificate (Optional)
+### 3. Associate a Certificate with the ArgoCD Instance
 
 !!! warning "Firefox Browser Users"
-    If you are using Firefox, you will not be able to access the ArgoCD console until a valid certificate has been associated with it. Other browsers are unaffected.
+    If you are using the Firefox browser, you will not be able to access the ArgoCD console until a valid certificate has been associated with it. Other browsers are unaffected; you can omit this step if you wish.
+
+Some browsers will not allow you to access the ArgoCD instance unless it has been configured with a valid certificate. The following commands will associate a valid certificate directly with the ArgoCD instance.
 
 ```bash
 # Create temporary directory
@@ -300,66 +292,58 @@ cd ..
 rm -rf /tmp/argocd-cert
 ```
 
-## Accessing ArgoCD
+### 4. Launch ArgoCD
 
-### 1. Get ArgoCD URL
-
-ArgoCD can be accessed via an OpenShift route:
+ArgoCD can be accessed via an OpenShift route. Using a browser, navigate to the URL returned by following command:
 
 ```bash
 # Get the ArgoCD route URL
 oc get route openshift-gitops-cntk-server -n openshift-gitops -o jsonpath='{"https://"}{.spec.host}{"\n"}'
 ```
 
-Example output:
+This will list the route to the ArgoCD instance we've just created, for example:
 ```
-https://openshift-gitops-cntk-server-openshift-gitops.apps.itz-pokxlu.hub01-lb.techzone.ibm.com
+https://openshift-gitops-cntk-server-openshift-gitops.ibmcloud-roks-xxxxx.containers.appdomain.cloud
 ```
 
-### 2. Access ArgoCD Console
+Copy the URL from your terminal output into your browser to launch the ArgoCD web console.
 
-1. Copy the URL from your terminal output into your browser
-2. You should see the ArgoCD login page:
+(_You can safely ignore any browser certificate warnings._)
+
+You should get to the ArgoCD login page:
 
 ![ArgoCD Login](images/argo71.png)
 
-!!! note "Certificate Warnings"
-    You can safely ignore any browser certificate warnings.
+### 5. Login to ArgoCD
 
-### 3. Authentication Options
+!!! info "Authentication Options"
+    When logging into ArgoCD you can select one of two different authentication mechanisms. You can select either mechanism, but if you want to have full access to do things like synching or refreshing ArgoCD Applications, you should use the mechanism that uses administrator credentials (first option below).
 
-ArgoCD provides two authentication mechanisms:
+You can see that the ArgoCD login page provides two different mechanism for authentication:
 
-#### Option 1: ArgoCD Administrator (Recommended)
+1. The first mechanisms uses the **ArgoCD service account credentials** created at installation time. If you use this mechanism, you will be authenticated as an administrator with all associated privileges. (You don't need administrator privileges to complete the tutorial.)
 
-Use the ArgoCD service account credentials for full administrative access:
+   To log in using the ArgoCD administrator credentials, use **admin** for the `username` and retrieve the **password** from the appropriate Kubernetes secret. Use the following command to retrieve the password:
 
-- **Username:** `admin`
-- **Password:** Retrieve using the following command:
+   ```bash
+   oc extract secret/openshift-gitops-cntk-cluster -n openshift-gitops --keys="admin.password" --to=-
+   ```
 
-```bash
-oc extract secret/openshift-gitops-cntk-cluster -n openshift-gitops --keys="admin.password" --to=-
-```
+2. The second mechanism uses your OpenShift Single Sign On mechanism to authenticate you. If you use this mechanism, you will be authenticated as your user, rather than an administrator, with appropriate permissions. These permissions are sufficient to complete the tutorial, but you will not be able to perform a full range of ArgoCD operations.
 
-#### Option 2: OpenShift SSO
+   You may be prompted to grant the ArgoCD Service Account access your OpenShift user account information details.
 
-Use your OpenShift Single Sign-On credentials:
+   ![ArgoCD OpenShift Access](images/argo-access.png)
 
-1. Click **"Login with OpenShift"**
-2. Grant access to the ArgoCD Service Account when prompted:
+   If so, grant access to retrieve your OpenShift user information.
 
-![ArgoCD OpenShift Access](images/argo-access.png)
-
-!!! note "Permission Differences"
-    OpenShift SSO authentication provides sufficient permissions to complete the tutorial, but you won't have full administrative access to perform all ArgoCD operations.
-
-### 4. ArgoCD Dashboard
-
-Once logged in, you'll see the ArgoCD dashboard:
+Once the UI launches, you'll see:
 
 ![ArgoCD Applications](images/argo-applications.png)
 
-Notice that there are no ArgoCD applications active at the moment. In the next section, we'll configure ArgoCD to create the **ArgoCD applications** that will spin up **infrastructure**, **service**, and **application** resources.
+See how there are no ArgoCD applications active at the moment.
+
+In the next section of the tutorial, we'll configure ArgoCD to create the **ArgoCD applications** that will in turn spin up **infrastructure**, **service**, and **application** resources to apply to the cluster.
 
 ## Connect ArgoCD
 
@@ -487,7 +471,7 @@ With ArgoCD connected and the bootstrap application deployed, you're ready to:
 3. **Deploy ACE Applications** - Build and deploy your ACE applications
 
 !!! success "Congratulations!"
-    You have successfully created the GitOps repository for your cluster and examined its high-level structure. You also installed ArgoCD with a custom instance that includes IBM Cloud Pak-specific health checks. You created specific **clusterrole** and **clusterrolebinding** for the ArgoCD service account to ensure that it manages the cluster in a well-governed manner. Finally, you launched the UI for ArgoCD; you will make extensive use of it during this tutorial.
+    You have created the GitOps repository for your cluster and examined its high level structure. You also installed ArgoCD. You created a specific **clusterrole** and **clusterrolebinding** for the ArgoCD service account to ensure that it manages the cluster in a well governed manner. Finally, you launched the UI for ArgoCD; you will make extensive use of it during this tutorial.
 
     In the next topic of this chapter, we are going to customize the GitOps repository for your cluster and use Tekton and ArgoCD to create and manage the Kubernetes resources for our ACE applications.
 
