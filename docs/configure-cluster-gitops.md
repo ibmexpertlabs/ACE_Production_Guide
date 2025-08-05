@@ -158,6 +158,9 @@ ArgoCD is installed via the OpenShift GitOps operator. The installation process 
 oc apply -f setup/ocp4x/argocd-operator/ -n openshift-operators
 ```
 
+!!! note "Open Source Community Approach"
+    This guide is designed for community contribution. Users should fork this repository, customize it for their environment, and contribute improvements back to the community. The GitOps repositories are structured to be easily forked and customized.
+
 ### 2. Verify Installation
 
 Monitor the installation progress:
@@ -358,14 +361,130 @@ Once logged in, you'll see the ArgoCD dashboard:
 
 Notice that there are no ArgoCD applications active at the moment. In the next section, we'll configure ArgoCD to create the **ArgoCD applications** that will spin up **infrastructure**, **service**, and **application** resources.
 
+## Connect ArgoCD
+
+Let's now connect your customized GitOps repository to the instance of ArgoCD running in the cluster. Once connected, ArgoCD will use the contents of this repository to create matching resources in the cluster. It will also keep the cluster synchronized with any changes to the GitOps repository.
+
+### 1. Review the Bootstrap-Single-Cluster ArgoCD Application
+
+Recall that you pushed the customized local copy of the GitOps repository to your GitHub account. The repository contains a bootstrap-single-cluster ArgoCD application that, when deployed to the cluster, will continuously watch this repository and use its contents to synchronize the cluster.
+
+The `0-bootstrap/single-cluster/bootstrap.yaml` file is used to create our first ArgoCD application called bootstrap-single-cluster. This initial ArgoCD application effectively bootstraps the cluster by creating all the other ArgoCD applications that control the infrastructure, service and application resources deployed to the cluster.
+
+Examine the YAML that defines the ArgoCD bootstrap application:
+
+```bash
+cat 0-bootstrap/single-cluster/bootstrap.yaml
+```
+
+You should see:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bootstrap-single-cluster
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: 0-bootstrap/single-cluster
+    repoURL: https://github.com/YOUR-ORG/multi-tenancy-gitops.git
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+```
+
+!!! important "Repository Customization"
+    Make sure the `repoURL` points to your forked repository. Replace `YOUR-ORG` with your GitHub organization name.
+
+Within this repository, the folder `path: 0-bootstrap/single-cluster` refers to a folder that contains all the other ArgoCD applications that are used to manage cluster resources.
+
+By deploying this ArgoCD application to a cluster, we are effectively linking our GitOps repository to that cluster.
+
+### 2. Apply ArgoCD Bootstrap.yaml to the Cluster
+
+Let's now deploy the bootstrap-single-cluster ArgoCD application to bootstrap the cluster.
+
+Issue the following command to apply the bootstrap YAML to the cluster:
+
+```bash
+oc apply -f 0-bootstrap/single-cluster/bootstrap.yaml
+```
+
+Kubernetes will confirm that the bootstrap-single-cluster resource has been created:
+
+```
+application.argoproj.io/bootstrap-single-cluster created
+```
+
+Notice that:
+
+- `application.argoproj.io` indicates that this is an ArgoCD application.
+- The bootstrap-single-cluster ArgoCD application is now watching the 0-bootstrap/single-cluster folder in our multi-tenancy-gitops repository on GitHub.
+- This is the only direct cluster operation we need to perform; from now on, all cluster operations will be performed via Git operations to this repository.
+
+### 3. Verify the Bootstrap Deployment
+
+We can use the command line to verify that the bootstrap ArgoCD application is running.
+
+Issue the following command:
+
+```bash
+oc get app/bootstrap-single-cluster -n openshift-gitops
+```
+
+You should see that the bootstrap application was recently updated:
+
+```
+NAME                       SYNC STATUS   HEALTH STATUS
+bootstrap-single-cluster   Synced        Healthy
+```
+
+`SYNC STATUS` may temporarily show `OutOfSync` or `HEALTH_STATUS` may temporarily show Missing; simply re-issue the command to confirm it moves to Synced and Healthy.
+
+### 4. Using the UI to View the Newly Deployed ArgoCD Applications
+
+We can also use the ArgoCD web console to view the Kubernetes resources deployed to the cluster. Switch back to the web console, refresh the page and you should see the `bootstrap-single-cluster` ArgoCD application together with three other ArgoCD applications:
+
+![ArgoCD Application List](images/argo-app-list.png)
+
+(You may need to select `List` view rather than the `Tiles` view.)
+
+We can see that four ArgoCD applications have been deployed to the cluster as a result of applying `bootstrap.yaml`.
+
+The first ArgoCD application is the `bootstrap-single-cluster` ArgoCD application. It has created three other ArgoCD applications:
+
+- **`infra`** watches for **infrastructure** components to be synchronized with the cluster.
+- **`services`** watches for **service** components to be synchronized with the cluster.
+- **`applications`** watches for **application** components to be synchronized with the cluster.
+
+As resources are added, updated or removed to the **infrastructure**, **service** and **application** folders watched by these applications, the cluster will be kept synchronized with the contents of the corresponding folder.
+
+We'll see how these applications work in more detail in the next sections.
+
+### 5. The Bootstrap-Single-Cluster ArgoCD Application in Detail
+
+In the ArgoCD UI **Applications** view, click on the bootstrap-single-cluster application:
+
+![Bootstrap Single Cluster Detail](images/boostrap-single-cluster-1.png)
+
+You can see the bootstrap application creates two types of Kubernetes resources, namely ArgoCD `applications` and ArgoCD `projects` for `infra`, `services` and `applications`.
+
+An ArgoCD **project** is a mechanism by which we can group related resources; we keep all our ArgoCD applications that manage infrastructure in the `infra` project, all applications that manage services in the `services` project, and so on.
+
 ## Next Steps
 
-With ArgoCD installed and configured, you're ready to:
+With ArgoCD connected and the bootstrap application deployed, you're ready to:
 
-1. **Configure Git Repository Access** - Set up ArgoCD to read your GitOps repositories
-2. **Create ArgoCD Applications** - Define applications for infrastructure, services, and ACE components
-3. **Deploy Infrastructure** - Set up namespaces, RBAC, and foundational resources
-4. **Install Cloud Pak for Integration** - Deploy CP4I with GitOps automation
+1. **Deploy Infrastructure** - Set up namespaces, RBAC, and foundational resources
+2. **Install Cloud Pak for Integration** - Deploy CP4I with GitOps automation
+3. **Deploy ACE Applications** - Build and deploy your ACE applications
 
 !!! success "Congratulations!"
     You have successfully created the GitOps repository for your cluster and examined its high-level structure. You also installed ArgoCD with a custom instance that includes IBM Cloud Pak-specific health checks. You created specific **clusterrole** and **clusterrolebinding** for the ArgoCD service account to ensure that it manages the cluster in a well-governed manner. Finally, you launched the UI for ArgoCD; you will make extensive use of it during this tutorial.
