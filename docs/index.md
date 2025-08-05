@@ -76,6 +76,35 @@ Before you begin, ensure you have:
 - Basic knowledge of Kubernetes and OpenShift
 - Familiarity with Git and CI/CD concepts
 
+### Required Tools
+
+The following tools are required for this guide:
+
+- **OpenShift CLI (oc)** - Version 4.16 or newer
+- **Git** - For version control and repository management
+- **Node.js & npm** - For development tools
+- **GitHub CLI (gh)** - For GitHub operations
+- **jq** - For JSON processing
+- **tree** - For directory structure visualization
+- **Tekton CLI (tkn)** - For pipeline operations
+- **kubeseal** - For sealed secrets management
+
+### Quick Setup Script
+
+For RHEL/CentOS/Fedora systems, you can use our automated prerequisites script:
+
+```bash
+# Download and run the prerequisites script
+curl -O https://raw.githubusercontent.com/ibmexpertlabs/ACE_Production_Guide/main/prerequisites.sh
+chmod +x prerequisites.sh
+./prerequisites.sh
+```
+
+!!! tip "Installation Help"
+    - Use the [OpenShift CLI installation guide](https://docs.openshift.com/container-platform/4.16/cli_reference/openshift_cli/getting-started-cli.html) for detailed setup instructions
+    - The prerequisites script automatically installs most required tools
+    - You'll still need to manually install the OpenShift CLI (oc) after running the script
+
 ## 🚦 Getting Started
 
 This guide follows a structured approach to deploying ACE in production:
@@ -99,7 +128,7 @@ This guide references four key repositories:
 
 This guide is maintained by IBM Client Engineering. For questions, suggestions, or contributions, please:
 
-- Open an issue on our [GitHub repository](https://github.com/ibmexpertlabs/ACE_Production_Guide)
+- Reach out to IBM Sales
 - Contact the team through IBM Client Engineering channels
 - Submit pull requests for improvements
 

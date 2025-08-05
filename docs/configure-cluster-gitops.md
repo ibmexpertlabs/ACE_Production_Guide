@@ -43,6 +43,14 @@ Before attempting this section, you must have completed the following tasks:
 - ✅ Installed `npm`, `git`, `tree`, and `jq` commands
 - ✅ Have cluster administrator access
 
+!!! tip "Quick Setup"
+    Use our [prerequisites script](https://raw.githubusercontent.com/ibmexpertlabs/ACE_Production_Guide/main/prerequisites.sh) to automatically install most required tools:
+    ```bash
+    curl -O https://raw.githubusercontent.com/ibmexpertlabs/ACE_Production_Guide/main/prerequisites.sh
+    chmod +x prerequisites.sh
+    ./prerequisites.sh
+    ```
+
 !!! tip "OpenShift CLI Installation"
     Use these [instructions](https://docs.openshift.com/container-platform/4.16/cli_reference/openshift_cli/getting-started-cli.html) to get the latest version of `oc`. Use `oc version` to confirm that you have:
     - **Client Version:** 4.19 or higher
